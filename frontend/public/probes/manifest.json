@@ -1,0 +1,178 @@
+{
+  "n_questions": 1000,
+  "variants": {
+    "full_ft": {
+      "serving_base": "bf16",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 699,
+        "num_execution_correct": 754,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.699,
+        "sql_execution_accuracy": 0.754
+      }
+    },
+    "lora_r4": {
+      "serving_base": "bf16",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 707,
+        "num_execution_correct": 771,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.707,
+        "sql_execution_accuracy": 0.771
+      }
+    },
+    "lora_r8": {
+      "serving_base": "bf16",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 713,
+        "num_execution_correct": 780,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.713,
+        "sql_execution_accuracy": 0.78
+      }
+    },
+    "lora_r16": {
+      "serving_base": "bf16",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 708,
+        "num_execution_correct": 767,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.708,
+        "sql_execution_accuracy": 0.767
+      }
+    },
+    "lora_r32": {
+      "serving_base": "bf16",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 716,
+        "num_execution_correct": 779,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.716,
+        "sql_execution_accuracy": 0.779
+      }
+    },
+    "lora_r64": {
+      "serving_base": "bf16",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 708,
+        "num_execution_correct": 767,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.708,
+        "sql_execution_accuracy": 0.767
+      }
+    },
+    "qlora_r4": {
+      "serving_base": "4bit",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 707,
+        "num_execution_correct": 762,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.707,
+        "sql_execution_accuracy": 0.762
+      }
+    },
+    "qlora_r8": {
+      "serving_base": "4bit",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 728,
+        "num_execution_correct": 783,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.728,
+        "sql_execution_accuracy": 0.783
+      }
+    },
+    "qlora_r16": {
+      "serving_base": "4bit",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 731,
+        "num_execution_correct": 783,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.731,
+        "sql_execution_accuracy": 0.783
+      }
+    },
+    "qlora_r32": {
+      "serving_base": "4bit",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 712,
+        "num_execution_correct": 773,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.712,
+        "sql_execution_accuracy": 0.773
+      }
+    },
+    "qlora_r64": {
+      "serving_base": "4bit",
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 719,
+        "num_execution_correct": 774,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.719,
+        "sql_execution_accuracy": 0.774
+      }
+    }
+  },
+  "serving_bf16": {
+    "qlora_r4": {
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 687,
+        "num_execution_correct": 756,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.687,
+        "sql_execution_accuracy": 0.756
+      }
+    },
+    "qlora_r8": {
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 701,
+        "num_execution_correct": 768,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.701,
+        "sql_execution_accuracy": 0.768
+      }
+    },
+    "qlora_r16": {
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 713,
+        "num_execution_correct": 767,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.713,
+        "sql_execution_accuracy": 0.767
+      }
+    },
+    "qlora_r32": {
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 701,
+        "num_execution_correct": 761,
+        "num_invalid_sql": 1,
+        "sql_exact_match": 0.701,
+        "sql_execution_accuracy": 0.761
+      }
+    },
+    "qlora_r64": {
+      "metrics": {
+        "num_examples": 1000,
+        "num_exact_match": 723,
+        "num_execution_correct": 772,
+        "num_invalid_sql": 0,
+        "sql_exact_match": 0.723,
+        "sql_execution_accuracy": 0.772
+      }
+    }
+  }
+}

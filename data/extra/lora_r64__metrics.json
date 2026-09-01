@@ -1,0 +1,32 @@
+{
+  "variant_id": "lora_r64",
+  "method": "lora",
+  "rank": 64,
+  "parameters": {
+    "total": 7655986688,
+    "trainable": 40370176,
+    "trainable_percentage": 0.527302
+  },
+  "resources": {
+    "peak_memory_allocated_bytes": 23683781120,
+    "peak_memory_reserved_bytes": 46955233280,
+    "training_time_seconds": 4389.67,
+    "checkpoint_size_bytes": 172942388
+  },
+  "evaluation": {
+    "eval_loss": 0.03582179918885231,
+    "perplexity": 1.0364711300369978,
+    "token_accuracy": 0.9889762324079256,
+    "num_examples": 1000,
+    "num_exact_match": 708,
+    "num_execution_correct": 768,
+    "num_invalid_sql": 0,
+    "sql_exact_match": 0.708,
+    "sql_execution_accuracy": 0.768
+  },
+  "validation": {
+    "checkpoint_reload_success": true,
+    "probe_generation_success": true,
+    "evaluation_reload_success": true
+  }
+}

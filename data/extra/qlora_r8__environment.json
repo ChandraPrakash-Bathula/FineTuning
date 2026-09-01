@@ -1,0 +1,20 @@
+{
+  "gpu": {
+    "name": "NVIDIA H200",
+    "memory_bytes": 150109880320,
+    "count": 1
+  },
+  "software": {
+    "python": "3.12.11",
+    "pytorch": "2.8.0+cu128",
+    "cuda": "12.8",
+    "transformers": "5.16.1",
+    "peft": "0.20.0",
+    "bitsandbytes": "0.50.1",
+    "datasets": "3.6.0",
+    "accelerate": "1.14.0"
+  },
+  "git": {
+    "commit": null
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "variant_id": "full_ft",
+  "method": "full_ft",
+  "rank": null,
+  "parameters": {
+    "total": 7615616512,
+    "trainable": 7615616512,
+    "trainable_percentage": 100.0
+  },
+  "resources": {
+    "peak_memory_allocated_bytes": 76430906880,
+    "peak_memory_reserved_bytes": 103104380928,
+    "training_time_seconds": 5239.06,
+    "checkpoint_size_bytes": 15242698864
+  },
+  "evaluation": {
+    "eval_loss": 0.04004810377955437,
+    "perplexity": 1.0408608423286514,
+    "token_accuracy": 0.9885552035571803,
+    "num_examples": 1000,
+    "num_exact_match": 699,
+    "num_execution_correct": 753,
+    "num_invalid_sql": 0,
+    "sql_exact_match": 0.699,
+    "sql_execution_accuracy": 0.753
+  },
+  "validation": {
+    "checkpoint_reload_success": true,
+    "probe_generation_success": true,
+    "evaluation_reload_success": true
+  }
+}

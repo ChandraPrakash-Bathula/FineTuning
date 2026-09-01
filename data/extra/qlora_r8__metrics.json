@@ -1,0 +1,32 @@
+{
+  "variant_id": "qlora_r8",
+  "method": "qlora",
+  "rank": 8,
+  "parameters": {
+    "total": 7620662784,
+    "trainable": 5046272,
+    "trainable_percentage": 0.066218
+  },
+  "resources": {
+    "peak_memory_allocated_bytes": 17479839232,
+    "peak_memory_reserved_bytes": 35276193792,
+    "training_time_seconds": 5863.82,
+    "checkpoint_size_bytes": 31646162
+  },
+  "evaluation": {
+    "eval_loss": 0.036354225128889084,
+    "perplexity": 1.037023121086866,
+    "token_accuracy": 0.9888684079461494,
+    "num_examples": 1000,
+    "num_exact_match": 728,
+    "num_execution_correct": 783,
+    "num_invalid_sql": 0,
+    "sql_exact_match": 0.728,
+    "sql_execution_accuracy": 0.783
+  },
+  "validation": {
+    "checkpoint_reload_success": true,
+    "probe_generation_success": true,
+    "evaluation_reload_success": true
+  }
+}
