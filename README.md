@@ -1,4 +1,4 @@
-# Interactive Fine-Tuning Laboratory
+# Interactive Fine-Tuning : Full Fine Tuning, LoRA, QLoRA.
 
 A four-part lesson built on eleven real fine-tuning experiments on
 `Qwen/Qwen2.5-7B-Instruct` over WikiSQL.
