@@ -175,3 +175,23 @@ a static deployment is only files on a CDN and can never run a 7B model itself.
 **Not verified:** the backend has never been executed against a live request —
 there is no GPU on this machine. It parses and the adapter-switching structure is
 right, but treat it as untested.
+
+### If you want to actually run it
+
+1. **Get a real CUDA GPU.** Nothing here can run it, not this Mac, not a static
+   site. Cheapest paths: a free Colab T4 (works with `LOAD_BASES=qlora`), a rented
+   GPU (RunPod, Lambda, vast.ai), or the HF Docker Space deployment above with GPU
+   hardware selected in Settings.
+2. **Run `backend/app.py` on that machine** (`uvicorn backend.app:app`). It already
+   loads Qwen2.5-7B-Instruct and the adapters; this part hasn't changed.
+3. **Expose it publicly** if it is not already: a cloudflared or ngrok tunnel for a
+   rented box, or nothing extra for a Docker Space, which is public by default.
+4. **Wire the frontend back up.** This is the part that is actually missing right
+   now. When the "Ask them something new" UI was removed, so was the only code path
+   that called `POST /api/run` (`runLive` in `frontend/src/lib/backend.ts`). Today,
+   connecting a working backend only flips the SQL lab's status message; nothing
+   calls it. Getting real live answers back means rebuilding a UI action for it:
+   either that old custom-table flow, or something smaller like a "regenerate live"
+   button next to a held-out SQL lab question.
+5. **Test it on that real GPU** before trusting it for anything. The backend has
+   never been exercised end to end; that is still the honest gap noted above.
