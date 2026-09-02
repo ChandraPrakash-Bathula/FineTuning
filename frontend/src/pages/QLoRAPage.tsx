@@ -3,6 +3,7 @@ import type { Lab } from "../lib/registry";
 import { ARCH, RANKS } from "../lib/arch";
 import { pct, size, duration } from "../lib/format";
 import QuantViz from "../components/QuantViz";
+import QLoRAArchDiagram from "../components/QLoRAArchDiagram";
 import ServingBaseComparison from "../components/ServingBaseComparison";
 
 const BLOCK_SIZE = 64;
@@ -31,6 +32,8 @@ export default function QLoRAPage({ lab, onNext }: { lab: Lab; onNext: () => voi
           bits instead of sixteen.
         </p>
       </header>
+
+      <QLoRAArchDiagram />
 
       <section className="card">
         <h2>Four bits, chosen for how weights are actually distributed</h2>

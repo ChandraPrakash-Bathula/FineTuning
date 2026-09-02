@@ -20,6 +20,50 @@ export default function WhyFineTune({ lab, onNext }: { lab: Lab; onNext: () => v
       </header>
 
       <section className="card">
+        <h2>What this task is, and where it comes from</h2>
+        <p className="body">
+          Turning a plain-English question into a working SQL query is the practical
+          core of every "ask your data a question" product: BI dashboards, support
+          tools, spreadsheet assistants. It is also a clean task for teaching
+          fine-tuning: a generated query either returns the right rows or it does not,
+          so every method below can be scored, not just eyeballed.
+        </p>
+        <p className="body">
+          Neither the model nor the data was built for this lesson. Both are
+          off-the-shelf, and every run here starts from the same pair.
+        </p>
+        <div className="setup-grid">
+          <div>
+            <dt>Base model</dt>
+            <dd>
+              <a href="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct" target="_blank" rel="noreferrer">
+                Qwen2.5-7B-Instruct
+              </a>{" "}
+              is a 7-billion-parameter instruction-tuned model from Alibaba's Qwen
+              team, one size in the openly released Qwen2.5 family (0.5B to 72B).
+              Already competent at reading structured data like tables, which this
+              task is entirely built from.
+            </dd>
+          </div>
+          <div>
+            <dt>Dataset</dt>
+            <dd>
+              <a href="https://huggingface.co/datasets/Salesforce/wikisql" target="_blank" rel="noreferrer">
+                WikiSQL
+              </a>{" "}
+              is 80,654 hand-annotated question/SQL pairs over 24,241 Wikipedia
+              tables, published by Salesforce Research (
+              <a href="https://arxiv.org/abs/1709.00103" target="_blank" rel="noreferrer">
+                Zhong, Xiong &amp; Socher, 2017
+              </a>
+              ). Every question anywhere on this site, including all 1,000 held out
+              for evaluation, comes from this set.
+            </dd>
+          </div>
+        </div>
+      </section>
+
+      <section className="card">
         <h2>The gap we care about here</h2>
         <p className="body">
           Our task is translating an English question into SQL against a specific

@@ -73,37 +73,3 @@ export async function checkHealth(signal?: AbortSignal): Promise<BackendStatus> 
     };
   }
 }
-
-export interface LiveResult {
-  variant_id: string;
-  predicted_sql: string | null;
-  gold_sql: string | null;
-  result_rows: unknown[][] | null;
-  gold_rows: unknown[][] | null;
-  exact_match: boolean;
-  execution_correct: boolean;
-  invalid_sql: boolean;
-  error: string | null;
-}
-
-export interface RunResponse {
-  question: string;
-  /** false for a custom question: there is no gold SQL, so there is no score */
-  scoreable: boolean;
-  results: LiveResult[];
-}
-
-export async function runLive(body: {
-  variants: string[];
-  example_id?: number;
-  question?: string;
-  table?: { header: string[]; types?: string[]; rows: unknown[][] };
-}): Promise<RunResponse> {
-  const res = await fetch(`${getApiBase()}/api/run`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`/api/run: HTTP ${res.status} ${await res.text()}`);
-  return (await res.json()) as RunResponse;
-}

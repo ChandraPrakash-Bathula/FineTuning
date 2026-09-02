@@ -6,6 +6,7 @@ import {
 } from "../lib/arch";
 import { params, size, pct } from "../lib/format";
 import LoRAAnimation from "../components/LoRAAnimation";
+import LoRAArchDiagram from "../components/LoRAArchDiagram";
 import { Matrix, matrixSize, sharedUnit } from "../components/Matrix";
 import RankCurve from "../components/RankCurve";
 
@@ -25,6 +26,8 @@ export default function LoRAPage({ lab, dark, onNext }: { lab: Lab; dark: boolea
           low-rank correction that gets added on top.
         </p>
       </header>
+
+      <LoRAArchDiagram />
 
       <div className="rank-picker">
         <span className="muted">rank r</span>
