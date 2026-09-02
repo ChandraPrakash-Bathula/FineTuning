@@ -51,7 +51,7 @@ export default function Playground({ lab, dark }: { lab: Lab; dark: boolean }) {
   const [rank, setRank] = useState(16);
   const [compare, setCompare] = useState<Set<string>>(
     () => new Set(["full_ft", "lora_r16", "qlora_r16"]));
-  const { backend, connect, apiBase } = useBackend();
+  const { backend } = useBackend();
 
   const activeId = method === "full_ft" ? "full_ft" : `${method}_r${rank}`;
   const active = lab.byId.get(activeId);
@@ -218,8 +218,7 @@ export default function Playground({ lab, dark }: { lab: Lab; dark: boolean }) {
 
       <section className="card">
         <h2>SQL laboratory</h2>
-        <SqlLab variants={selected} dark={dark} backend={backend}
-                apiBase={apiBase} onConnect={connect} />
+        <SqlLab variants={selected} dark={dark} backend={backend} />
       </section>
 
       <div className="callout closing">

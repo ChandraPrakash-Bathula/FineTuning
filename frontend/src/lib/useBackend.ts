@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { checkHealth, getApiBase, setApiBase, type BackendStatus } from "./backend";
+import { checkHealth, type BackendStatus } from "./backend";
 
 /**
- * One backend connection shared by everything that needs it, so the SQL lab and
- * the live panel never disagree about whether a GPU is reachable.
+ * Reports whether an inference backend is reachable (same-origin on a Docker
+ * Space, or VITE_API_BASE baked in at build time) so the SQL lab can say so.
  *
  * While the bases are loading the health endpoint is re-polled, because that
  * transition can take minutes and the user should see it finish.
  */
 export function useBackend() {
   const [backend, setBackend] = useState<BackendStatus>({ state: "checking" });
-  const [apiBase, setBase] = useState(() => getApiBase());
 
   const probe = useCallback(async (timeoutMs = 6000) => {
     const ctl = new AbortController();
@@ -31,12 +30,5 @@ export function useBackend() {
     return () => clearInterval(id);
   }, [backend, probe]);
 
-  const connect = useCallback(async (url: string | null) => {
-    setApiBase(url);
-    setBase(url ?? "");
-    setBackend({ state: "checking" });
-    await probe();
-  }, [probe]);
-
-  return { backend, connect, apiBase, refresh: probe };
+  return { backend, refresh: probe };
 }

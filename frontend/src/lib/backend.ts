@@ -23,34 +23,13 @@ export type BackendStatus =
   | { state: "unreachable"; reason: string };
 
 /**
- * Where the API lives. Resolved at RUNTIME, not build time, so a static
- * deployment (which is only files on a CDN and can never run a model itself)
- * can still be pointed at a backend the reader spins up elsewhere -- a Colab
- * T4 behind a tunnel, a rented GPU, anything.
+ * Where the API lives. Resolved at RUNTIME, not build time:
  *
- *   1. whatever the reader saved in this browser
- *   2. VITE_API_BASE baked in at build time
- *   3. same origin (the Docker Space, where FastAPI serves both)
+ *   1. VITE_API_BASE baked in at build time
+ *   2. same origin (the Docker Space, where FastAPI serves both)
  */
-const STORAGE_KEY = "ftlab.apiBase";
-
 export function getApiBase(): string {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return saved.replace(/\/$/, "");
-  } catch {
-    /* private mode or blocked storage: fall through */
-  }
   return (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, "") ?? "";
-}
-
-export function setApiBase(url: string | null) {
-  try {
-    if (url) localStorage.setItem(STORAGE_KEY, url.trim().replace(/\/$/, ""));
-    else localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    /* nothing we can do; the caller still gets the in-memory value */
-  }
 }
 
 export async function checkHealth(signal?: AbortSignal): Promise<BackendStatus> {

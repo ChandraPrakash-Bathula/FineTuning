@@ -21,8 +21,9 @@ cd frontend && npm install && npm run dev
 ```
 
 No GPU needed. The lesson, the experiment replay, the comparisons and the SQL
-laboratory all read recorded artifacts. Only live inference needs the backend, and
-the app says so plainly when it is not running.
+laboratory all read recorded artifacts, and nothing here calls a model at request
+time. An optional inference backend exists (see below); the SQL lab reports
+whether one is reachable, but the app runs completely without it.
 
 ## The four parts
 
@@ -81,9 +82,9 @@ probe truth (624K → 213K).
 
 Two flavours. A write-scoped `HF_TOKEN` is needed for either.
 
-**Static — free, and it is most of the product.** The production build is fully
+**Static — free, and it is the whole product.** The production build is fully
 self-contained: the lesson, the experiment replay, every comparison, and all 1,000
-recorded questions work with no server at all. Only asking a *new* question needs a GPU.
+recorded questions work with no server at all.
 
 ```bash
 HF_TOKEN=hf_xxx python3 scripts/deploy_space.py static <user>/<space-name>
@@ -91,8 +92,11 @@ HF_TOKEN=hf_xxx python3 scripts/deploy_space.py static <user>/<space-name>
 
 Uploads 27 files, 2.3 MB, onto free CPU Basic hardware.
 
-**Docker — adds live inference.** FastAPI serves the built frontend and the API on
-one origin, so there is no CORS to configure and no `VITE_API_BASE` to set.
+**Docker — runs a real backend alongside it.** FastAPI serves the built frontend
+and the API on one origin, so there is no CORS to configure and no `VITE_API_BASE`
+to set. This makes `/api/health` genuinely report the loaded bases and adapters
+instead of "not configured," but see the note above: no UI path calls
+`POST /api/run` yet, so this does not currently change what the lesson shows.
 
 ```bash
 HF_TOKEN=hf_xxx python3 scripts/deploy_space.py docker <user>/<space-name>
@@ -139,23 +143,14 @@ are preserved, never smoothed.
 **SQL diffing is case-sensitive inside string literals.** `'CitV'` vs `'CITV'` is a
 real miss; keywords stay case-insensitive.
 
-## Live inference (optional)
+## The inference backend (not wired into the UI)
 
-**Hardware required.** The bf16 base is 15.2 GB of weights, and the QLoRA path needs
-bitsandbytes, which is CUDA-only. So this needs a CUDA GPU with ≥16 GB of VRAM
-(≥32 GB to also load `full_ft`). It will not run on Apple Silicon, and it will not
-run on a machine with 8 GB of memory. Everything else in this project runs anywhere.
+`backend/app.py` is a standalone FastAPI service that can load the real bases and
+adapters and answer a question live, rather than replaying a recorded one:
 
 ```bash
 pip install -r backend/requirements.txt
 uvicorn backend.app:app --port 8000        # LOAD_FULL_FT=1 to add full_ft
-```
-
-To point the frontend at a backend running elsewhere (a rented GPU, a tunnelled
-Colab), set `VITE_API_BASE` before starting the dev server:
-
-```bash
-VITE_API_BASE=https://your-gpu-host npm run dev
 ```
 
 ```
@@ -163,10 +158,20 @@ GET  /api/health     GET /api/registry    GET /api/examples    POST /api/run
 ```
 
 Two bases load once — bf16 for LoRA, 4-bit NF4 for QLoRA — and adapters switch with
-`set_adapter()` rather than reloading a 7B model per request. A held-out example has
-gold SQL and is scoreable; a custom question returns `scoreable: false` and the UI
-must show the query and rows without a verdict.
+`set_adapter()` rather than reloading a 7B model per request.
 
-**Not verified:** the backend has never been executed — there is no GPU on this
-machine. It parses and the adapter-switching structure is right, but treat first
-run as untested.
+**Hardware required.** The bf16 base is 15.2 GB of weights, and the QLoRA path needs
+bitsandbytes, which is CUDA-only. So this needs a CUDA GPU with ≥16 GB of VRAM
+(≥32 GB to also load `full_ft`). It will not run on Apple Silicon, and it will not
+run on a machine with 8 GB of memory.
+
+**The frontend currently only shows whether this is reachable, nothing more.** The
+SQL lab polls `/api/health` (via `VITE_API_BASE`, or same origin on the Docker
+Space) and reports the connection state, but every answer it displays still comes
+from the recorded Phase 1 probe run: no UI path calls `POST /api/run`. Everything
+else in this project runs anywhere, on recorded artifacts alone, which is the point:
+a static deployment is only files on a CDN and can never run a 7B model itself.
+
+**Not verified:** the backend has never been executed against a live request —
+there is no GPU on this machine. It parses and the adapter-switching structure is
+right, but treat it as untested.

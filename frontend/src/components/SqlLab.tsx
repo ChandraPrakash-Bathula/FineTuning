@@ -28,12 +28,10 @@ const KIND_COPY = {
 
 type Kind = keyof typeof KIND_COPY;
 
-export default function SqlLab({ variants, dark, backend, apiBase, onConnect }: {
+export default function SqlLab({ variants, dark, backend }: {
   variants: Variant[];
   dark: boolean;
   backend: BackendStatus;
-  apiBase: string;
-  onConnect: (url: string | null) => Promise<void>;
 }) {
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [dis, setDis] = useState<Disagreement | null>(null);
@@ -43,19 +41,6 @@ export default function SqlLab({ variants, dark, backend, apiBase, onConnect }: 
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<Kind>("split");
   const [err, setErr] = useState<string | null>(null);
-  const [apiDraft, setApiDraft] = useState(apiBase);
-  const [connecting, setConnecting] = useState(false);
-
-  const connect = async (url: string | null) => {
-    setConnecting(true);
-    setApiDraft(url ?? "");
-    try {
-      await onConnect(url);
-    } finally {
-      setConnecting(false);
-    }
-  };
-
 
   useEffect(() => {
     Promise.all([loadQuestions(), loadDisagreement()])
@@ -163,35 +148,6 @@ export default function SqlLab({ variants, dark, backend, apiBase, onConnect }: 
             </span>
           )}
         </div>
-
-        <details className="api-connect" open={backend.state !== "available"}>
-          <summary>Connect an inference backend</summary>
-          <p className="muted">
-            Run <code>backend/app.py</code> on any machine with a CUDA GPU — a free Colab
-            T4 works with <code>LOAD_BASES=qlora</code> — expose it (cloudflared, ngrok),
-            and paste the URL. It is stored in this browser only.
-          </p>
-          <form
-            className="api-form"
-            onSubmit={(e) => { e.preventDefault(); connect(apiDraft.trim() || null); }}
-          >
-            <input
-              value={apiDraft}
-              onChange={(e) => setApiDraft(e.target.value)}
-              placeholder="https://your-tunnel.trycloudflare.com"
-              aria-label="inference backend URL"
-              spellCheck={false}
-            />
-            <button className="chip primary" type="submit" disabled={connecting}>
-              {connecting ? "connecting…" : "connect"}
-            </button>
-            {apiBase && (
-              <button className="chip" type="button" onClick={() => connect(null)}>
-                clear
-              </button>
-            )}
-          </form>
-        </details>
 
         <div className="lab-counts">
           <Count n={dis.counts.unanimous} of={dis.n_questions} label="identical SQL from all 11" />
