@@ -212,8 +212,7 @@ right, but treat it as untested.
 
 ### If you want to actually run it
 
-1. **Get a real CUDA GPU.** Nothing here can run it, not this Mac, not a static
-   site. Cheapest paths: a free Colab T4 (works with `LOAD_BASES=qlora`), a rented
+1. **Get a real CUDA GPU.** Paths to run this live : a free Colab T4 (works with `LOAD_BASES=qlora`), a rented
    GPU (RunPod, Lambda, vast.ai), or the HF Docker Space deployment above with GPU
    hardware selected in Settings.
 2. **Run `backend/app.py` on that machine** (`uvicorn backend.app:app`). It already
