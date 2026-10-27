@@ -10,6 +10,7 @@ import MetricComparison from "../components/MetricComparison";
 import ComparisonTable from "../components/ComparisonTable";
 import TrainingCurves from "../components/TrainingCurves";
 import SqlLab from "../components/SqlLab";
+import PairedTest from "../components/PairedTest";
 import { useBackend } from "../lib/useBackend";
 import Provenance from "../components/Provenance";
 import { variantColor, methodColor } from "../lib/palette";
@@ -24,7 +25,7 @@ const PROS: Record<Method, { good: string[]; bad: string[] }> = {
     bad: ["Needs an 80 GB accelerator; will not fit on a 40 GB card",
           "A full model checkpoint per task — ten tasks means ten copies",
           "The most expensive of the three to rent",
-          "Scored no better than the adapters on this task"],
+          "In this sweep (one seed, one learning rate) it scored below the adapters"],
   },
   lora: {
     good: ["Hundreds of times fewer trainable parameters",
@@ -38,7 +39,7 @@ const PROS: Record<Method, { good: string[]; bad: string[] }> = {
   qlora: {
     good: ["Lowest memory of the three; fits on hardware people own",
            "Adapter checkpoints identical in size to LoRA's",
-           "Accuracy indistinguishable from the alternatives on this task"],
+           "No measurable accuracy difference from LoRA at the same rank in this sweep"],
     bad: ["Slowest per step — every matmul dequantises first",
           "Quantisation is lossy; the frozen base is permanently approximated",
           "Serving the adapter on a bf16 base changes its accuracy (see the QLoRA page)"],
@@ -216,6 +217,8 @@ export default function Playground({ lab, dark }: { lab: Lab; dark: boolean }) {
         </>
       )}
 
+      <PairedTest lab={lab} />
+
       <section className="card">
         <h2>SQL laboratory</h2>
         <SqlLab variants={selected} dark={dark} backend={backend} />
@@ -229,11 +232,45 @@ export default function Playground({ lab, dark }: { lab: Lab; dark: boolean }) {
           checkpoint size.
         </strong>
         <span>
-          Which would you deploy? And note what this cannot tell you: every run saw the
-          same ≈{lab.trainSizeApprox.toLocaleString()} examples. Whether more capacity pays off
-          on a harder task, or more data on this one, remains open.
+          Which would you deploy? Before answering, note what these runs cannot tell you.
+          They are one model (Qwen2.5-7B-Instruct), one task (WikiSQL), one seed, about{" "}
+          {lab.trainSizeApprox.toLocaleString()} training examples, and one learning rate
+          per method. Treat the results as evidence about this setup, not as rules.
         </span>
       </div>
+
+      <section className="card">
+        <h2>Questions to investigate</h2>
+        <p className="body">
+          None of these has a single answer. Use the panels above, and say what evidence
+          would change your mind.
+        </p>
+        <ol className="body questions">
+          <li>
+            Full fine-tuning scored lower than every adapter here. List at least two
+            explanations other than "LoRA is better". Which one could you test with one
+            extra run?
+          </li>
+          <li>
+            Each run used a single seed. If you retrained full fine-tuning with a new seed,
+            how far might its accuracy move? How would you find out before trusting a
+            2-point gap?
+          </li>
+          <li>
+            Pick the pair with the smallest McNemar p in "Is a gap real?". Would you report
+            it as a finding? What changes once you remember it was the best of{" "}
+            {((lab.variants.length * (lab.variants.length - 1)) / 2).toLocaleString()} pairs?
+          </li>
+          <li>
+            Rank made no measurable difference on this task. Name a task where you would
+            expect it to, and explain why.
+          </li>
+          <li>
+            Would these conclusions hold for a 0.5B model? For open-ended text generation
+            instead of SQL? What is the cheapest experiment that would tell you?
+          </li>
+        </ol>
+      </section>
     </article>
   );
 }

@@ -9,12 +9,16 @@ import LoRAAnimation from "../components/LoRAAnimation";
 import LoRAArchDiagram from "../components/LoRAArchDiagram";
 import { Matrix, matrixSize, sharedUnit } from "../components/Matrix";
 import RankCurve from "../components/RankCurve";
+import { usePaired, pairOf, fmtP } from "../lib/paired";
 
 export default function LoRAPage({ lab, dark, onNext }: { lab: Lab; dark: boolean; onNext: () => void }) {
   const [rank, setRank] = useState(16);
   const v = lab.byId.get(`lora_r${rank}`)!;
   const full = lab.byId.get("full_ft")!;
   const alpha = alphaFor(rank);
+  const paired = usePaired();
+  const r4r64 = paired && pairOf(paired, "lora_r4", "lora_r64");
+  const vsFull = paired && pairOf(paired, `lora_r${rank}`, "full_ft");
 
   return (
     <article className="page">
@@ -158,14 +162,17 @@ export default function LoRAPage({ lab, dark, onNext }: { lab: Lab; dark: boolea
           })}
         </div>
         <div className="callout">
-          <strong>Sixteen times the rank did not buy sixteen times anything.</strong>
+          <strong>Sixteen times the rank did not buy a measurable gain here.</strong>
           <span>
             r=4 scored {pct(lab.byId.get("lora_r4")!.execAccuracy)} and r=64 scored{" "}
-            {pct(lab.byId.get("lora_r64")!.execAccuracy)} — a gap of{" "}
-            {((lab.byId.get("lora_r64")!.execAccuracy - lab.byId.get("lora_r4")!.execAccuracy) * 100).toFixed(1)}{" "}
-            points, well inside the ±{lab.standardErrorPts.toFixed(1)} standard error on{" "}
-            {lab.evalN.toLocaleString()} examples. On this task, capacity was not the
-            binding constraint.
+            {pct(lab.byId.get("lora_r64")!.execAccuracy)}.
+            {r4r64 && <>
+              {" "}On the same questions, r=4 alone got {r4r64.a_only} right and r=64 alone
+              got {r4r64.b_only}: a paired McNemar test gives p = {fmtP(r4r64.mcnemar_p)}.
+            </>}{" "}
+            For this model, task and training budget, rank was not the limiting factor.
+            Would that hold for a smaller model, or a task further from what the model
+            already knows?
           </span>
         </div>
       </section>
@@ -187,8 +194,15 @@ export default function LoRAPage({ lab, dark, onNext }: { lab: Lab; dark: boolea
                   ratio={`${(full.peakMemoryGb - v.peakMemoryGb).toFixed(0)} GB less`} />
           <Versus label="Execution accuracy"
                   a={pct(full.execAccuracy)} b={pct(v.execAccuracy)}
-                  ratio="statistically tied" />
+                  ratio={`${((v.execAccuracy - full.execAccuracy) * 100).toFixed(1)} pts`
+                    + (vsFull ? ` · paired p = ${fmtP(vsFull.mcnemar_p)}` : "")} />
         </div>
+        <p className="muted">
+          Accuracy differences are tested with a paired test on the {lab.evalN.toLocaleString()}{" "}
+          shared questions; see "Is a gap real?" in the playground. In this sweep no adapter
+          scored below full fine-tuning, but that rests on one seed and one learning rate
+          per method.
+        </p>
         <p className="body">
           The checkpoint difference is the one that changes how you work. At{" "}
           {size(v.checkpointMb)} you can keep a folder of adapters, one per task, and

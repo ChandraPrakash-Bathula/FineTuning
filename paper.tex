@@ -1,0 +1,169 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2026
+
+% The authors should use one of these tracks.
+% Before accepting by the NeurIPS conference, select one of the options below.
+% 0. "default" for submission
+% \usepackage{neurips_2026}
+% the "default" option is equal to the "main" option, which is used for the Main Track with double-blind reviewing.
+% 1. "main" option is used for the Main Track
+%  \usepackage[main]{neurips_2026}
+% 2. "position" option is used for the Position Paper Track
+%  \usepackage[position]{neurips_2026}
+% 3. "eandd" option is used for the Evaluations & Datasets Track
+ % \usepackage[eandd]{neurips_2026}
+% 4. "creativeai" option is used for the Creative AI Track
+%  \usepackage[creativeai]{neurips_2026}
+% 5. "sglblindworkshop" option is used for the Workshop with single-blind reviewing
+ % \usepackage[sglblindworkshop]{neurips_2026}
+% 6. "dblblindworkshop" option is used for the Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop]{neurips_2026}
+% 7. "education" option is used for the Education Track
+ % \usepackage[education]{neurips_2026}
+
+
+% After being accepted, the authors should add "final" behind the track to compile a camera-ready version.
+% 1. Main Track
+ % \usepackage[main, final]{neurips_2026}
+% 2. Position Paper Track
+%  \usepackage[position, final]{neurips_2026}
+% 3. Evaluations & Datasets Track
+ % \usepackage[eandd, final]{neurips_2026}
+% 4. Creative AI Track
+%  \usepackage[creativeai, final]{neurips_2026}
+% 5. Workshop with single-blind reviewing
+%  \usepackage[sglblindworkshop, final]{neurips_2026}
+% 6. Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop, final]{neurips_2026}
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote.
+% For workshops (5., 6.), the authors should add the name of the workshop, "\workshoptitle" command is used to set the workshop title.
+% \workshoptitle{WORKSHOP TITLE}
+% 7. Education Track
+\usepackage[education, final]{neurips_2026}
+% "preprint" option is used for arXiv or other preprint submissions
+ % \usepackage[preprint]{neurips_2026}
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2026}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
+\title{What Fine-Tuning Actually Costs:\\A Measured Comparison of Full, LoRA and QLoRA Adaptation.}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{%
+  Chandra Prakash Bathula\\
+  Saint Louis University\\
+  \texttt{chandraprakash.bathula@slu.edu} \\ \And
+  Ram Mohan Bathula \\
+  \texttt{rammohan.bathula9@gmail.com}
+  % examples of more authors
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \AND
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+  % \And
+  % Coauthor \\
+  % Affiliation \\
+  % Address \\
+  % \texttt{email} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+LoRA and QLoRA are often presented mainly as ways to reduce the memory needed for fine-tuning. We wanted to measure what that trade-off looks like in practice. We ran eleven fine-tunes of the same 7.62B model on the same task: full fine-tuning, plus LoRA and QLoRA at five ranks each. We evaluated the models by executing generated SQL against the database rather than comparing SQL strings directly. Execution accuracy ranged from 75.4\% to 78.3\%, while checkpoint size differed by up to 707$\times$ and trainable parameters by 3{,}018$\times$. Because all variants answer the same 1{,}000 questions, we compare them with paired tests (McNemar, paired bootstrap). Across 55 pairwise comparisons, none survives Holm correction, and ranks 4--64 are statistically indistinguishable. The ten adapters average 2.0 points above full fine-tuning (95\% CI 0.4--3.6), a difference confounded with learning rate and based on one seed. All reported numbers come from experiment artifacts or arithmetic on them.
+\end{abstract}
+\section{The Concept}
+Parameter-efficient fine-tuning (PEFT) teaches how large language models can be adapted to new tasks without updating every model parameter. This is important because full fine-tuning can require substantial GPU memory and produce large checkpoints, making adaptation expensive even when the underlying task is relatively small. LoRA addresses this by freezing the base model and learning a low-rank update $\Delta W = BA$, while QLoRA combines the same adaptation with a 4-bit NF4-quantized base model. The material makes these trade-offs concrete through eleven fine-tunes of Qwen2.5-7B-Instruct on WikiSQL, comparing full fine-tuning with LoRA and QLoRA across ranks 4, 8, 16, 32, and 64. In our experiments, execution accuracy remained between 75.4\% and 78.3\%, while checkpoint sizes differed by up to 707$\times$, illustrating that substantial resource savings do not necessarily require proportional losses in task performance. The material also highlights a related evaluation issue: SQL generation should be evaluated by execution rather than exact string matching because different SQL queries can produce identical results. These topics remain central to current LLM research as practitioners seek efficient adaptation methods for increasingly large models under limited compute and memory budgets. These results are for one model (Qwen2.5-7B-Instruct), one task (WikiSQL), one seed per variant, and one learning rate per method ($10^{-5}$ for full fine-tuning, $2\times10^{-4}$ for adapters). Accuracies are taken from re-generated per-question outputs, which the paired tests require. Re-generating changes individual accuracies by up to 0.4 points relative to the original evaluation, which sets a practical noise floor.
+\section{Leveling and Prerequisite Knowledge}
+The material is intended for \textbf{advanced undergraduate and graduate} learners and is designed to fit a 90-minute laboratory or a unit within a graduate seminar. Learners should be comfortable with basic neural-network training, matrix multiplication, matrix rank, optimizer states, and reading Python/PyTorch code. These prerequisites are sufficient to follow the main comparisons and understand the parameter and memory calculations. No prior knowledge of LoRA, QLoRA, low-bit quantization, distributed training, or parameter-efficient fine-tuning is required.
+
+The material supports different levels of engagement. Learners with limited fine-tuning experience can focus on the interactive comparisons of model outputs, accuracy, memory, and checkpoint size, while more advanced learners can examine the low-rank parameterization, quantization, memory calculations, and statistical comparisons. Required concepts are introduced immediately before they are used, making the resource suitable for both a focused advanced-undergraduate laboratory and graduate-level teaching.
+
+\section{Learning Objectives and Outcomes}
+
+A learner who completes the material will be able to:
+
+\begin{itemize}
+\item \textbf{Remember} what LoRA and QLoRA freeze and how the low-rank update $\Delta W = BA$ is used.
+\item \textbf{Understand} why freezing parameters reduces training memory and why 4-bit storage does not imply 4-bit computation.
+\item \textbf{Apply} $r(d{+}k)$ versus $dk$ to estimate trainable parameters before training.
+\item \textbf{Analyse} accuracy, peak memory, checkpoint size, and training time across fine-tuning methods.
+\item \textbf{Evaluate} accuracy differences using paired tests (McNemar, paired bootstrap), with a multiple-comparison correction when many pairs are examined.
+\item \textbf{Create} a fine-tuning plan for a given compute or storage budget, including a justified rank and base precision.
+\end{itemize}
+
+\textbf{Outcome.} Learners use measured results to make informed fine-tuning choices rather than assuming that lower-cost methods are less accurate. They also learn to account for deployment conditions when selecting an adaptation method, including the effect of changing the base model precision after training. The eleven-run comparison provides concrete evidence for reasoning about these trade-offs, including where QLoRA provides additional memory savings over LoRA. It also shows learners that the same accuracy gap can look non-significant under an unpaired test and significant under a paired one, and that picking the widest pair after the fact inflates apparent significance unless the test is corrected for the number of comparisons.
+
+\section{Linked Papers}
+
+The low-rank re-parameterization and merge-at-inference property are introduced in [3], while [2] introduces the NF4 quantization, double quantization, and paged optimizers used by QLoRA. [1] shows that the gap between LoRA and full fine-tuning depends on the training regime, with larger differences during continued pretraining and smaller differences under instruction fine-tuning at higher ranks. [5] further shows that similar task scores do not imply identical learned solutions. [4] demonstrates the serving benefits of compact LoRA adapters, while [6] examines parameter-efficient fine-tuning across 310 models. We use WikiSQL [7] so that generated SQL can be evaluated directly against the database without relying on an LLM judge.
+
+\section{Teaching Materials Summary}
+
+The submission provides an \textbf{interactive fine-tuning laboratory}, a \textbf{reproducible experiment replay}, and supporting code files and artifacts built from eleven real fine-tuning experiments on Qwen/Qwen2.5-7B-Instruct over WikiSQL. The four-part lesson covers full fine-tuning, LoRA, QLoRA, and a comparison playground. Learners can explore model outputs, accuracy, memory, checkpoint size, training curves, and rank-dependent trade-offs using recorded experimental results.
+
+The LoRA lesson includes an eight-step walkthrough of $\Delta W = BA$ using a real \texttt{q\_proj}, while the QLoRA lesson provides an interactive NF4 quantization example and memory calculations. The playground allows learners to replay experiments, compare variants across metrics, and inspect all 1,000 held-out questions, including cases where different SQL queries produce the same correct result.
+
+Every displayed result traces to a recorded artifact, model configuration, or explicit calculation. The eleven experiment artifacts, registry, per-question outputs, paired significance tests (\texttt{scripts/paired\_stats.py}), figures, analysis scripts, and application source code are included so that the results can be inspected and reproduced without retraining the models. An optional inference backend is also provided for live experimentation on suitable CUDA hardware.
+\section*{References}
+{
+\small
+ 
+[1] Biderman, D., Portes, J., Ortiz, J. J. G., Paul, M., Greengard, P., Jennings, C., King, D., Havens, S., Chiley, V., Frankle, J., Blakeney, C., \& Cunningham, J. P. (2024). LoRA learns less and forgets less. https://arxiv.org/abs/2405.09673
+ 
+[2] Dettmers, T., Pagnoni, A., Holtzman, A., \& Zettlemoyer, L. (2023). QLoRA: Efficient finetuning of quantized LLMs. https://arxiv.org/abs/2305.14314
+ 
+[3] Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., \& Chen, W. (2022). LoRA: Low-rank adaptation of large language models. International Conference on Learning Representations (ICLR). https://openreview.net/forum?id=nZeVKeeFYf9
+ 
+[4] Sheng, Y., Cao, S., Li, D., Hooper, C., Lee, N., Yang, S., Chou, C., Zhu, B., Zheng, L., Keutzer, K., Gonzalez, J. E., \& Stoica, I. (2024). S-LoRA: Serving thousands of concurrent LoRA Adapters. https://arxiv.org/abs/2311.03285
+ 
+[5] Shuttleworth, R., Andreas, J., Torralba, A., \& Sharma, P. (2025). LoRA vs full fine-tuning: An illusion of equivalence. https://arxiv.org/abs/2410.21228
+
+[6] Zhao, J., Wang, T., Abid, W., Angus, G., Garg, A., Kinnison, J., Sherstinsky, A., Molino, P., Addair, T., \& Rishi, D. (2024). LoRA Land: 310 Fine-tuned LLMs that rival GPT-4, a technical report. https://arxiv.org/abs/2405.00732
+
+[7] Zhong, V., Xiong, C., \& Socher, R. (2017). Seq2SQL: Generating structured queries from natural language using reinforcement learning. https://arxiv.org/abs/1709.00103
+}
+\section{Resources}
+\textbf{Github:}{https://github.com/ChandraPrakash-Bathula/FineTuning}
+\textbf{HuggingFace-Space:}{https://huggingface.co/spaces/ChandraPrakashBathula/finetuning-laboratory}
+
+\end{document}

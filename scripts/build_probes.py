@@ -22,6 +22,8 @@ import json
 import os
 import sys
 
+import registry_from_probes
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "frontend", "public", "probes")
 
@@ -122,20 +124,10 @@ def main():
     print(f"wrote {OUT}")
 
     # ---- frontend copy of the registry ------------------------------------
-    # registry.json embeds a 25-question generation_probes block per variant.
-    # The 1,000-question files above supersede it entirely; leaving both in the
-    # bundle would ship two disagreeing sources of probe truth. Strip it from
-    # the copy the browser loads. data/registry.json stays untouched.
-    web_reg = {k: v for k, v in registry.items() if k != "variants"}
-    web_reg["variants"] = [{k: v for k, v in var.items() if k != "generation_probes"}
-                           for var in registry["variants"]]
-    dest = os.path.join(ROOT, "frontend", "public", "registry.json")
-    with open(dest, "w") as fh:
-        json.dump(web_reg, fh, separators=(",", ":"))
-    before = os.path.getsize(os.path.join(ROOT, "data", "registry.json")) / 1024
-    after = os.path.getsize(dest) / 1024
-    print(f"frontend registry {before:.0f}K -> {after:.0f}K "
-          f"(dropped the superseded 25-probe blocks)")
+    # Headline SQL metrics are rewritten from the manifest just written, so
+    # the charts and the paired tests read the same generation pass.
+    print()
+    registry_from_probes.build()
 
 
 if __name__ == "__main__":

@@ -108,8 +108,10 @@ export default function RankCurve({
         ]}
       />
       <div className="chart-note">
-        The band is one standard error around the full fine-tune. Every adapter run
-        lands inside or beside it: sixteen times more rank does not move the metric.
+        The band is one standard error on the full fine-tune's score by itself. It is
+        not a test: whether two models differ is decided by a paired test on the
+        questions they share (see "Is a gap real?" in the playground). By that test,
+        r=4 and r=64 do not differ measurably for either method.
       </div>
     </ChartCard>
   );

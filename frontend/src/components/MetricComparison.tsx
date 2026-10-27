@@ -116,10 +116,11 @@ export default function MetricComparison({ variants, dark, gpuId, sePts, evalN }
 
       {m.errorPts && (
         <p className="chart-note">
-          The shaded band spans every selected variant ± one standard error
-          (±{sePts.toFixed(1)} points on {evalN.toLocaleString()} examples). Differences
-          smaller than about {(sePts * 2).toFixed(0)} points are not distinguishable at
-          this eval size — this chart is not a ranking.
+          Error bars are ± one standard error on each score by itself
+          (±{sePts.toFixed(1)} points on {evalN.toLocaleString()} examples). Overlapping
+          bars do <em>not</em> mean two models are tied: every model answered the same
+          questions, so a paired test is more sensitive than the bars suggest. Use "Is a
+          gap real?" below to test any pair.
         </p>
       )}
     </div>

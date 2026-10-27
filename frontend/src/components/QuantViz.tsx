@@ -11,7 +11,7 @@ export const NF4_LEVELS = [
   0.7229568362236023, 1.0,
 ];
 
-const BLOCK = [0.021, -0.044, 0.008, 0.115, -0.067, 0.031, -0.002, 0.052];
+export const BLOCK = [0.021, -0.044, 0.008, 0.115, -0.067, 0.031, -0.002, 0.052];
 
 export default function QuantViz() {
   // NOT the absmax cell -- that one normalises to exactly 1.0 and shows zero

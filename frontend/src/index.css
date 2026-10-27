@@ -567,3 +567,20 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .col-note strong { color: var(--text-primary); font-family: ui-monospace, monospace;
   font-size: 0.95em; font-weight: 600; }
 
+
+/* ------------------------------------------------------ paired tests --- */
+.paired-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px; align-items: start; margin: 4px 0 8px; }
+.contingency td.dim { color: var(--text-muted); }
+.contingency td.disc { font-weight: 600; color: var(--text-primary); background: var(--raised); }
+.paired-result { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.paired-result div { border-left: 2px solid var(--grid); padding-left: 11px; }
+.paired-result dt { font-size: 0.72rem; color: var(--text-muted); }
+.paired-result dd { margin: 2px 0 0; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+.paired-result .was dd { color: var(--text-muted); text-decoration: line-through; }
+.paired-result.inline { flex-direction: row; flex-wrap: wrap; gap: 22px; margin: 12px 0 4px; }
+.paired-steps, .questions { padding-left: 20px; margin: 14px 0 0; }
+.paired-steps li + li, .questions li + li { margin-top: 8px; }
+tr.row-on td { background: var(--raised); }
+.family td { vertical-align: top; text-align: left; }
+.family th { text-align: left; }

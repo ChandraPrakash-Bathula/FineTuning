@@ -5,6 +5,7 @@ import { pct, size, duration } from "../lib/format";
 import QuantViz from "../components/QuantViz";
 import QLoRAArchDiagram from "../components/QLoRAArchDiagram";
 import ServingBaseComparison from "../components/ServingBaseComparison";
+import { usePaired, pairOf, fmtP } from "../lib/paired";
 
 const BLOCK_SIZE = 64;
 
@@ -12,6 +13,8 @@ export default function QLoRAPage({ lab, onNext }: { lab: Lab; onNext: () => voi
   const [rank, setRank] = useState(16);
   const q = lab.byId.get(`qlora_r${rank}`)!;
   const l = lab.byId.get(`lora_r${rank}`)!;
+  const paired = usePaired();
+  const qVsL = paired && pairOf(paired, `qlora_r${rank}`, `lora_r${rank}`);
 
   const n = ARCH.totalParams;
   const bf16Gb = (n * 2) / 1e9;
@@ -101,7 +104,7 @@ export default function QLoRAPage({ lab, onNext }: { lab: Lab; onNext: () => voi
           were run over the full held-out set, so the cost of that convenience is
           measurable.
         </p>
-        <ServingBaseComparison lab={lab} />
+        <ServingBaseComparison />
       </section>
 
       <section className="card">
@@ -141,7 +144,10 @@ export default function QLoRAPage({ lab, onNext }: { lab: Lab; onNext: () => voi
                 <td>Execution accuracy</td>
                 <td>{pct(l.execAccuracy)}</td>
                 <td>{pct(q.execAccuracy)}</td>
-                <td>{((q.execAccuracy - l.execAccuracy) * 100).toFixed(1)} pts — inside noise</td>
+                <td>
+                  {((q.execAccuracy - l.execAccuracy) * 100).toFixed(1)} pts
+                  {qVsL && <> · paired p = {fmtP(qVsL.mcnemar_p)}</>}
+                </td>
               </tr>
             </tbody>
           </table>

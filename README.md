@@ -45,19 +45,47 @@ questions.
 
 ## What the data says
 
-**Accuracy is flat.** All eleven land in 75.3–78.4% execution accuracy with a
-standard error of ±1.3 points on 1,000 examples — statistically indistinguishable.
-Costs differ by up to 707× in checkpoint size. The app draws the error band
-explicitly and states that the accuracy chart is not a ranking.
+All findings below are scoped to this setup: Qwen2.5-7B-Instruct, WikiSQL, one seed
+(42) per run, about 56,000 training examples, and one learning rate per method
+(1e-5 for full fine-tuning, 2e-4 for adapters).
+
+**Significance is tested with paired methods.** Every variant answered the same
+1,000 held-out questions, so accuracies are compared with McNemar's exact test and a
+paired bootstrap (10,000 resamples), not an unpaired two-proportion test. The first
+version of this project used the unpaired test, which ignores the pairing and
+overstates the noise. `scripts/paired_stats.py` computes every test from the
+per-question results in `frontend/public/probes` and writes
+`frontend/public/paired_stats.json`.
+
+**Every accuracy comes from the probe runs.** The evaluation run in-process right
+after training stored only totals, which a paired test cannot use. The probe runs
+re-generate from the checkpoints on disk and record every question, so the app,
+paper and slides all report them. `scripts/registry_from_probes.py` writes them into
+the frontend copy of the registry and keeps the original block as
+`evaluation_at_training`. The two passes differ by up to 0.4 points per variant
+(full FT 75.4% vs 75.3%), which sets a noise floor from re-generation alone.
+
+**Full fine-tuning scored below the adapters, in this setup.** All eleven land in
+75.4–78.3% execution accuracy, but the gap is not random: full fine-tuning scored
+lower than all ten adapters. Averaged per question over the ten adapters, the gap is
+**+2.0 points (paired sign-flip test p = 0.013, 95% interval +0.4 to +3.6)**. Single
+pairs are weaker evidence: 6 of the 55 pairs reach McNemar p < 0.05 (full FT vs
+QLoRA r=8: p = 0.005), but none survive a Holm correction for 55 comparisons. These
+tests cover only which questions were sampled, not training noise. With one seed and
+one learning rate for full fine-tuning, this is not evidence that adapters beat full
+fine-tuning in general. Meanwhile costs differ by up to 707× in checkpoint size.
+
+**Rank and quantisation made no measurable difference to accuracy.** LoRA r=4 vs
+r=64: McNemar p = 0.76. QLoRA vs LoRA at the same rank: p = 0.10–0.82.
 
 **Serving base is part of the method.** Two probe runs exist. `regen.log` generated
 all eleven against a bf16 base; `regen_q.log` re-ran the five QLoRA variants against
 the 4-bit NF4 base they were trained on. The 4-bit run reproduces the registry's own
 evaluation 7.5× more closely, so it is the canonical set. The bf16 run is kept
-because the gap is a real result: **every rank loses accuracy on a bf16 base, about
-1.0 point on average**, while LoRA and full fine-tuning drift only 0.17 points in
-both directions. `backend/app.py` therefore loads two bases and puts QLoRA adapters
-on the 4-bit one.
+because the gap is a real result: **every rank loses accuracy on a bf16 base, 1.0
+point on average (paired sign-flip test over the five adapters, p = 0.009)**. Per
+rank, only r=16 reaches p < 0.05 on its own. `backend/app.py` therefore loads two
+bases and puts QLoRA adapters on the 4-bit one.
 
 **SQL text and SQL behaviour are different things.** Over 1,000 questions: 635
 produce identical SQL from all eleven, 263 genuinely split, **48 produce different
@@ -71,12 +99,16 @@ rows.
 python3 scripts/fetch_artifacts.py                        # registry + figures from HF
 python3 scripts/build_probes.py <export-dir> <4bit-dir>    # canonical probe set
 python3 scripts/check_disagreement.py                      # featured teaching cases
+python3 scripts/paired_stats.py                            # paired significance tests
+python3 scripts/paired_figure.py                           # accuracy figure with paired p
 ```
 
 `build_probes.py` splits the exports into one shared question list plus 64K per
-variant, validates every aggregate against the registry, and strips the superseded
-25-probe block from the frontend copy of the registry so there is exactly one source of
-probe truth (624K → 213K).
+variant, compares every aggregate with the registry, then runs
+`registry_from_probes.py`. That writes the frontend copy of the registry with probe
+SQL metrics and without the superseded 25-probe blocks, so there is exactly one source
+of accuracy. `data/registry.json` is never modified. To refresh only the registry copy,
+run `python3 scripts/registry_from_probes.py`.
 
 ## Deploying to a Hugging Face Space
 

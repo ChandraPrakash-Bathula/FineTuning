@@ -75,6 +75,8 @@ export default function App() {
         <footer className="foot">
           Every measured number here is read from Phase 1's <code>registry.json</code> —
           11 real training runs of <code>{lab.baseModel}</code> on <code>{lab.dataset}</code>.
+          SQL accuracies come from the recorded per-question probe runs, the same data
+          the significance tests use.
           Architecture figures come from the model's own <code>config.json</code>. Rental
           prices are assumptions, and are labelled where they appear.
         </footer>
