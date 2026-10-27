@@ -1187,5 +1187,31 @@
    "test": "sign-flip permutation",
    "resamples": 10000
   }
+ },
+ "omnibus": {
+  "all_eleven": {
+   "models": "all 11 variants",
+   "k": 11,
+   "q": 17.83993783993784,
+   "df": 10,
+   "p": 0.05772443798392701,
+   "test": "Cochran's Q"
+  },
+  "lora_ranks": {
+   "models": "LoRA r=4..64",
+   "k": 5,
+   "q": 3.6216216216216215,
+   "df": 4,
+   "p": 0.45962799448824965,
+   "test": "Cochran's Q"
+  },
+  "qlora_ranks": {
+   "models": "QLoRA r=4..64",
+   "k": 5,
+   "q": 6.910755148741419,
+   "df": 4,
+   "p": 0.14068024018067227,
+   "test": "Cochran's Q"
+  }
  }
 }

@@ -75,8 +75,9 @@ tests cover only which questions were sampled, not training noise. With one seed
 one learning rate for full fine-tuning, this is not evidence that adapters beat full
 fine-tuning in general. Meanwhile costs differ by up to 707× in checkpoint size.
 
-**Rank and quantisation made no measurable difference to accuracy.** LoRA r=4 vs
-r=64: McNemar p = 0.76. QLoRA vs LoRA at the same rank: p = 0.10–0.82.
+**Rank and quantisation made no measurable difference to accuracy.** Across all five
+ranks, Cochran's Q gives p = 0.46 for LoRA and p = 0.14 for QLoRA; LoRA r=4 vs r=64:
+McNemar p = 0.76. QLoRA vs LoRA at the same rank: p = 0.10–0.82.
 
 **Serving base is part of the method.** Two probe runs exist. `regen.log` generated
 all eleven against a bf16 base; `regen_q.log` re-ran the five QLoRA variants against
@@ -89,7 +90,8 @@ bases and puts QLoRA adapters on the 4-bit one.
 
 **SQL text and SQL behaviour are different things.** Over 1,000 questions: 635
 produce identical SQL from all eleven, 263 genuinely split, **48 produce different
-SQL that is all correct**, and 54 are missed by all eleven. Q603 is the clearest —
+SQL that is all correct**, and 54 produce different SQL that is all wrong. Counting
+identical SQL too, 109 questions are missed by all eleven. Q603 is the clearest —
 three different `COUNT(colN)` queries, none matching gold, all returning the gold
 rows.
 

@@ -99,6 +99,35 @@ def grouped(label_a, label_b, group_a, group_b, rng):
             "resamples": N_BOOT}
 
 
+def chi2_sf(x, df):
+    """Upper tail of chi-squared, via the series for the lower regularised gamma."""
+    a, h = df / 2, x / 2
+    if h <= 0:
+        return 1.0
+    term = total = 1.0 / a
+    k = 0
+    while term > 1e-15 * total:
+        k += 1
+        term *= h / (a + k)
+        total += term
+    lower = math.exp(a * math.log(h) - h - math.lgamma(a)) * total
+    return max(0.0, 1.0 - lower)
+
+
+def cochran_q(label, columns):
+    """Omnibus test: do any of these k models differ, on the same questions?
+
+    One test instead of k(k-1)/2 pairs, so no multiple-comparison correction is
+    needed. Q ~ chi-squared with k-1 df under "all k have the same accuracy".
+    """
+    x = np.asarray(columns).T  # questions x models
+    k = x.shape[1]
+    col, row, total = x.sum(axis=0), x.sum(axis=1), x.sum()
+    q = (k - 1) * (k * (col ** 2).sum() - total ** 2) / (k * total - (row ** 2).sum())
+    return {"models": label, "k": k, "q": float(q), "df": k - 1,
+            "p": chi2_sf(float(q), k - 1), "test": "Cochran's Q"}
+
+
 def holm(pvals):
     """Holm-Bonferroni adjusted p-values, same order as input."""
     m = len(pvals)
@@ -174,6 +203,14 @@ def main():
             [correct[f"qlora_r{r}"] for r in RANKS], [bf16[r] for r in RANKS], rng),
     }
 
+    lora = [f"lora_r{r}" for r in RANKS]
+    qlora = [f"qlora_r{r}" for r in RANKS]
+    omnibus = {
+        "all_eleven": cochran_q("all 11 variants", [correct[v] for v in VARIANTS]),
+        "lora_ranks": cochran_q("LoRA r=4..64", [correct[v] for v in lora]),
+        "qlora_ranks": cochran_q("QLoRA r=4..64", [correct[v] for v in qlora]),
+    }
+
     out = {
         "source": "frontend/public/probes (recorded probe runs, per-question execution_correct)",
         "n_questions": n,
@@ -185,6 +222,7 @@ def main():
         "pairs": pairs,
         "serving": serving,
         "groups": groups,
+        "omnibus": omnibus,
     }
     with open(OUT, "w") as f:
         json.dump(out, f, indent=1)
@@ -206,6 +244,8 @@ def main():
     for k, g in groups.items():
         print(f"{k}: diff {g['diff']*100:+.2f} pts  sign-flip p={g['p']:.4f}  "
               f"CI [{g['bootstrap_ci95'][0]*100:+.2f}, {g['bootstrap_ci95'][1]*100:+.2f}]")
+    for k, o in omnibus.items():
+        print(f"{k}: Cochran's Q = {o['q']:.2f}, df {o['df']}, p = {o['p']:.4f}")
 
 
 if __name__ == "__main__":

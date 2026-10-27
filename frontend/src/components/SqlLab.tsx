@@ -153,7 +153,7 @@ export default function SqlLab({ variants, dark, backend }: {
           <Count n={dis.counts.unanimous} of={dis.n_questions} label="identical SQL from all 11" />
           <Count n={dis.counts.split} of={dis.n_questions} label="genuinely split" />
           <Count n={dis.counts.equivalent} of={dis.n_questions} label="different SQL, all correct" />
-          <Count n={dis.counts.all_wrong} of={dis.n_questions} label="all eleven wrong" />
+          <Count n={dis.counts.all_wrong} of={dis.n_questions} label="different SQL, all wrong" />
         </div>
       </div>
 
